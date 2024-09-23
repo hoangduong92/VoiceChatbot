@@ -70,8 +70,7 @@ async def get_audio():
 
         # Guard: Ensure audio is generated
         if not audio_output:
-            raise HTTPException(status_code=400, detail="Failed to get ElevenLabs audio response")
-
+            raise HTTPException(status_code=400, detail="Failed to get OpenAI audio response")
 
         # Tạo một generator để trả về dữ liệu theo từng phần
         def iterfile():

@@ -7,7 +7,7 @@ def get_recent_message():
     file_name = "stored_data.json"
     learn_instruction = {
         "role": "system",
-        "content": "You are a Japanese language teacher with 50 years of experience. You are knowledgeable about everything related to Japanese vocabulary and grammar, along with a deep understanding of Japanese culture. You help the user improve their usage of Japanese vocabulary and grammar by conversing with them, guiding the conversation, and suggesting commonly used words. If the user makes mistakes in word usage, you will gently correct and provide suggestions.Even if the user enters the same input, give a gentle hint."
+        "content": "あなたは50年の経験を持つ日本語教師です。日本語の語彙や文法に関するあらゆる知識を持ち、日本文化にも深い理解があります。あなたは、ユーザーとの対話を通じて、日本語の語彙や文法の使い方を改善する手助けをします。会話を導き、よく使われる単語を提案してください。ユーザーが単語の使い方で間違いをした場合は、優しく訂正し、提案を行ってください。たとえ同じ入力がされた場合でも、穏やかにヒントを与えてください。"
     }
 
     # Initialize messages
@@ -16,9 +16,9 @@ def get_recent_message():
     # Add a random element
     x = random.uniform(0, 1)
     if x < 0.5:
-        learn_instruction["content"] = learn_instruction["content"] + "Your response will include some dry humor."
+        learn_instruction["content"] = learn_instruction["content"] + "あなたは日本風のユーモアで返答します。"
     else:
-        learn_instruction["content"] = learn_instruction["content"] + "You will converse in the style and tone of ひろゆき or サイコパスおじさん."
+        learn_instruction["content"] = learn_instruction["content"] + "ひろゆき或いはサイコパスおじさんのような返答をします。"
 
     # Append instruction to message
     messages.append(learn_instruction)
