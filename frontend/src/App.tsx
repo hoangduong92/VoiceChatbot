@@ -1,9 +1,10 @@
-import React from 'react'
+import React from 'react'; // Thêm dòng này
+import Controller from "./components/Controller"
 
 function App() {
   return (
-    <div className="App">
-      <div className="text-3xl font-bold">Hello duongbibo</div>
+    <div className="">
+      <Controller />
     </div>
   )
 }

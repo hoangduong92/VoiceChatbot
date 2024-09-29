@@ -14,6 +14,7 @@ from function.text_to_speech import convert_text_to_speech
 app = FastAPI()
 
 # CORS - Origins
+# quy định cổng cho frontend
 origins = [
     "http://localhost:5173",
     "http://localhost:5174",
@@ -42,53 +43,49 @@ async def reset_conversation():
     return {"message": "Conversation reset"}
 
 # Get audio
-@app.get("/post-audio-get/")
-async def get_audio():
-    try:
-        # Get saved audio
-        audio_input = open("voice.mp3", "rb")
-        
-        # Decode audio
-        message_decoded = convert_audio_to_text(audio_input)
+@app.post("/post-audio/")
+async def post_audio(file: UploadFile = File(...)):
 
-        # Guard: Ensure message is decoded
-        if not message_decoded:
-            raise HTTPException(status_code=400, detail="Failed to decode audio")
-        
-        # Get response from ChatGPT
-        chat_response = openai_chat_response(message_decoded)
+    # Get saved audio
+    # audio_input = open("voice.mp3", "rb")
 
-        # Guard: Ensure response is generated
-        if not chat_response:
-            raise HTTPException(status_code=400, detail="Failed to generate response")
+    # Save file from frontend        
+    with open(file.filename, "wb") as buffer:
+        buffer.write(file.file.read())
+    audio_input = open(file.filename, "rb")
+    
+    # Decode audio
+    message_decoded = convert_audio_to_text(audio_input)
 
-        # Store message
-        store_message(message_decoded, chat_response)
-        
-        # Convert chat response to audio
-        audio_output = convert_text_to_speech(chat_response)
+    # Guard: Ensure message is decoded
+    if not message_decoded:
+        raise HTTPException(status_code=400, detail="Failed to decode audio")
+    
+    # Get response from ChatGPT
+    chat_response = openai_chat_response(message_decoded)
 
-        # Guard: Ensure audio is generated
-        if not audio_output:
-            raise HTTPException(status_code=400, detail="Failed to get OpenAI audio response")
+    # Guard: Ensure response is generated
+    if not chat_response:
+        raise HTTPException(status_code=400, detail="Failed to generate response")
 
-        # Tạo một generator để trả về dữ liệu theo từng phần
-        def iterfile():
-            yield audio_output
+    # Store message
+    store_message(message_decoded, chat_response)
+    
+    # Convert chat response to audio
+    audio_output = convert_text_to_speech(chat_response)
 
-        # Trả về audio file
-        return StreamingResponse(iterfile(), media_type="audio/mpeg")
+    # Guard: Ensure audio is generated
+    if not audio_output:
+        raise HTTPException(status_code=400, detail="Failed to get OpenAI audio response")
 
-        # Thêm logging
-        print(f"Audio decoded: {message_decoded}")
-        print(f"Chat response: {chat_response}")
-        print(f"Audio output generated: {bool(audio_output)}")
-        
-    except Exception as e:
-        print(f"Lỗi trong get_audio: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
+    # Tạo một generator để trả về dữ liệu theo từng phần
+    def iterfile():
+        yield audio_output
 
-    # Xóa dòng return "DONE" vì nó không cần thiết và có thể gây ra lỗi
+    # Trả về audio file
+    return StreamingResponse(iterfile(), media_type="application/octet-stream")
+
+
 
 
 # Post bot response
